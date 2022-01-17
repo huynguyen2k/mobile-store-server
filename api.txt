@@ -1,0 +1,25 @@
+- Note:
+  - Status code:
+    + 200: Neu xu ly thanh cong
+    + 400: Loi do client (sai username, password, ...)
+    + 500: Loi do server (Khong ket noi dc DB, ...)
+
+  - get params from url: req.query.paramName
+
+
+1. Quản lý người dùng
+  - Đăng ký
+    + method: POST
+    + url: '/api/users/register'
+    + params: none
+    + body: {
+      full_name: string,
+      username: string,
+      password: string,
+      avatar: file,
+      role_id: int
+    }
+    + response: {
+      statusCode: number,
+      message: string
+    }
