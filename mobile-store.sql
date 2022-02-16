@@ -28,6 +28,7 @@ CREATE TABLE `USER_ADDRESS` (
   district_id int,
   ward_code varchar(30),
   address varchar(100),
+  is_default boolean,
   FOREIGN KEY (user_id) REFERENCES USER(id)
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE `NOTIFICATION` (
   created_date datetime,
   title varchar(300),
   content varchar(1000),
+  published boolean,
   user_id int,
   FOREIGN KEY (user_id) REFERENCES USER(id)
 );
@@ -53,6 +55,7 @@ CREATE TABLE `VIEWED_NOTIFICATION` (
 CREATE TABLE `BRAND` (
 	id int PRIMARY KEY AUTO_INCREMENT,
   name varchar(100),
+  published boolean,
   created_date datetime
 );
 
@@ -66,6 +69,7 @@ CREATE TABLE `PRODUCT` (
   weight int,
   length int,
   created_date datetime,
+  published boolean,
   brand_id int,
   user_id int,
   FOREIGN KEY (brand_id) REFERENCES BRAND(id),
@@ -158,11 +162,43 @@ CREATE TABLE `ORDER_TRACKING` (
 	id int PRIMARY KEY AUTO_INCREMENT,
   created_date datetime,
   status_id int,
-  user_id int,
   order_id int,
+  user_id int,
   FOREIGN KEY (user_id) REFERENCES USER(id),
   FOREIGN KEY (status_id) REFERENCES ORDER_STATUS(id),
   FOREIGN KEY (order_id) REFERENCES `ORDER`(id)
+);
+
+CREATE TABLE `SUPPLIER` (
+	id int PRIMARY KEY AUTO_INCREMENT,
+  name varchar(100),
+  phone_number varchar(15),
+  description varchar(1000),
+  province_id int,
+  district_id int,
+  ward_code varchar(30),
+  address varchar(100),
+  created_date datetime
+);
+
+CREATE TABLE `RECEIPT` (
+	id int PRIMARY KEY AUTO_INCREMENT,
+  supplier_id int,
+  user_id int,
+  total_price int,
+  created_date datetime,
+  FOREIGN KEY (supplier_id) REFERENCES SUPPLIER(id),
+  FOREIGN KEY (user_id) REFERENCES USER(id)
+);
+
+CREATE TABLE `RECEIPT_DETAIL` (
+	id int PRIMARY KEY AUTO_INCREMENT,
+  receipt_id int,
+  product_option_id int,
+  quantity int,
+  price int,
+  FOREIGN KEY (receipt_id) REFERENCES RECEIPT(id),
+  FOREIGN KEY (product_option_id) REFERENCES PRODUCT_OPTION(id)
 );
 
 CREATE TABLE `CART` (
@@ -170,6 +206,7 @@ CREATE TABLE `CART` (
   user_id int,
   product_option_id int,
   quantity int,
+  created_date datetime,
   FOREIGN KEY (user_id) REFERENCES `USER`(id),
   FOREIGN KEY (product_option_id) REFERENCES `PRODUCT_OPTION`(id)
 );
@@ -192,19 +229,43 @@ CREATE TABLE `RATING_IMAGE` (
   FOREIGN KEY (rating_id) REFERENCES PRODUCT_RATING(id)
 );
 
+CREATE TABLE `BANNER` (
+	id int PRIMARY KEY AUTO_INCREMENT,
+  name varchar(100),
+  image varchar(255),
+  published boolean,
+  created_date datetime,
+  user_id int,
+  FOREIGN KEY (user_id) REFERENCES USER(id)
+);
+
+CREATE TABLE `SHOP_INFO` (
+	id int PRIMARY KEY AUTO_INCREMENT,
+  logo varchar(100),
+  name varchar(100),
+  description text,
+  email varchar(255),
+  phone_number varchar(15),
+  province_id int,
+  district_id int,
+  ward_code varchar(30),
+  address varchar(100)
+);
+
 /* ====================== INSERT VALUES INTO USER_ROLE TABLE ====================== */
 INSERT INTO USER_ROLE(name) VALUES('Quản trị');
-INSERT INTO USER_ROLE(name) VALUES('Nhân viên');
+INSERT INTO USER_ROLE(name) VALUES('Nhân viên bán hàng');
+INSERT INTO USER_ROLE(name) VALUES('Nhân viên quản lý kho');
 INSERT INTO USER_ROLE(name) VALUES('Khách hàng');
 
 /* ====================== INSERT VALUES INTO BRAND TABLE ====================== */
-INSERT INTO BRAND(name, created_date) VALUES('Samsung', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('Vivo', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('Iphone', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('Xiaomi', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('OPPO', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('Nokia', '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, created_date) VALUES('Realme', '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Samsung', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Vivo', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Iphone', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Xiaomi', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('OPPO', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Nokia', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('Realme', 1, '2022-01-17 12:00:00');
 
 /* ====================== INSERT VALUES INTO BRAND TABLE ====================== */
 INSERT INTO ORDER_STATUS(name) VALUES('Chờ xác nhận');
@@ -212,3 +273,37 @@ INSERT INTO ORDER_STATUS(name) VALUES('Đang xử lý');
 INSERT INTO ORDER_STATUS(name) VALUES('Đang vận chuyển');
 INSERT INTO ORDER_STATUS(name) VALUES('Đã giao hàng');
 INSERT INTO ORDER_STATUS(name) VALUES('Đã hủy');
+
+/* ====================== INSERT VALUES INTO RAM_OPTION TABLE ====================== */
+INSERT INTO RAM_OPTION(name, created_date) VALUES('1 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('2 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('3 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('4 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('6 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('8 GB', '2022-01-23 06:00:00');
+INSERT INTO RAM_OPTION(name, created_date) VALUES('12 GB', '2022-01-23 06:00:00');
+
+/* ====================== INSERT VALUES INTO ROM_OPTION TABLE ====================== */
+INSERT INTO ROM_OPTION(name, created_date) VALUES('8 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('16 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('32 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('64 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('128 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('256 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('512 GB', '2022-01-23 06:00:00');
+
+/* ====================== INSERT VALUES INTO COLOR_OPTION TABLE ====================== */
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Xanh', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Đen', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Xanh dương', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Đỏ', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Bạc', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Xanh lá', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Vàng', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Hồng', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Trắng', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Xám', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Nâu', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Tím', '2022-01-23 06:00:00');
+INSERT INTO COLOR_OPTION(name, created_date) VALUES('Cam', '2022-01-23 06:00:00');
+

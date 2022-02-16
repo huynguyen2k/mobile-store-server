@@ -2,11 +2,7 @@ const db = require('../db')
 
 module.exports = {
 	getAll(req, res) {
-		const { published } = req.query
-		const query = `SELECT * FROM brand ${
-			published === undefined ? '' : `WHERE published = ${published}`
-		}`
-
+		const query = 'SELECT * FROM ram_option'
 		db.query(query, async (error, response) => {
 			if (error) throw error
 
@@ -19,10 +15,10 @@ module.exports = {
 	},
 
 	get(req, res) {
-		const { brandId } = req.params
-		const query = 'SELECT * FROM brand WHERE id = ?'
+		const { ramId } = req.params
+		const query = 'SELECT * FROM ram_option WHERE id = ?'
 
-		db.query(query, [brandId], (error, response) => {
+		db.query(query, [ramId], (error, response) => {
 			if (error) throw error
 
 			res.json({
@@ -35,50 +31,50 @@ module.exports = {
 
 	add(req, res) {
 		const data = req.body
-		const query = 'INSERT INTO brand SET ?'
+		const query = 'INSERT INTO ram_option SET ?'
 
 		db.query(query, [data], (error, response) => {
 			if (error) throw error
 
 			res.json({
 				statusCode: 200,
-				message: 'Thêm thương hiệu thành công!',
+				message: 'Thêm cấu hình ram thành công!',
 			})
 		})
 	},
 
 	update(req, res) {
-		const { brandId } = req.params
+		const { ramId } = req.params
 		const data = req.body
-		const query = 'UPDATE brand SET ? WHERE id = ?'
+		const query = 'UPDATE ram_option SET ? WHERE id = ?'
 
-		db.query(query, [data, brandId], (error, response) => {
+		db.query(query, [data, ramId], (error, response) => {
 			if (error) throw error
 
 			if (response.affectedRows > 0) {
 				res.json({
 					statusCode: 200,
-					message: 'Cập nhật thương hiệu thành công!',
+					message: 'Cập nhật cấu hỉnh ram thành công!',
 				})
 				return
 			}
 
 			res.status(404).json({
 				statusCode: 404,
-				message: 'Không tìm thấy thương hiệu mà bạn muốn cập nhật!',
+				message: 'Không tìm thấy cấu hình ram mà bạn muốn cập nhật!',
 			})
 		})
 	},
 
 	delete(req, res) {
-		const { brandId } = req.params
-		const query = 'DELETE FROM brand WHERE id = ?'
+		const { ramId } = req.params
+		const query = 'DELETE FROM ram_option WHERE id = ?'
 
-		db.query(query, [brandId], (error, response) => {
+		db.query(query, [ramId], (error, response) => {
 			if (error) {
 				res.status(400).json({
 					statusCode: 400,
-					message: 'Không thể xóa thương hiệu đã có sản phẩm!',
+					message: 'Không thể xóa cấu hình ram này!',
 				})
 				return
 			}
@@ -86,14 +82,14 @@ module.exports = {
 			if (response.affectedRows > 0) {
 				res.json({
 					statusCode: 200,
-					message: 'Xóa thương hiệu thành công!',
+					message: 'Xóa cấu hình ram thành công!',
 				})
 				return
 			}
 
 			res.status(404).json({
 				statusCode: 404,
-				message: 'Không tìm thấy thương hiệu mà bạn muốn xóa!',
+				message: 'Không tìm thấy cấu hình ram mà bạn muốn xóa!',
 			})
 		})
 	},
