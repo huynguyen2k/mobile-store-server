@@ -54,7 +54,7 @@ module.exports = {
 			if (response.affectedRows > 0) {
 				res.json({
 					statusCode: 200,
-					message: 'Cập nhật cấu hỉnh rom thành công!',
+					message: 'Cập nhật cấu hình rom thành công!',
 				})
 				return
 			}

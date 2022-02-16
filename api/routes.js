@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
+
 const avatarStorage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, './public/images/avatars')
@@ -11,7 +12,17 @@ const avatarStorage = multer.diskStorage({
 	},
 })
 
+const bannerStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, './public/images/banners')
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + file.originalname)
+	},
+})
+
 const uploadAvatar = multer({ storage: avatarStorage })
+const uploadBanner = multer({ storage: bannerStorage })
 
 const authToken = (req, res, next) => {
 	const authHeader = req.headers['authorization']
@@ -71,4 +82,15 @@ module.exports = function (app) {
 	app.post('/api/product-option/color', colorOptionCtrl.add)
 	app.put('/api/product-option/color/:colorId', colorOptionCtrl.update)
 	app.delete('/api/product-option/color/:colorId', colorOptionCtrl.delete)
+
+	// Banner API
+	const bannerCtrl = require('./controllers/BannerController')
+	app.get('/api/banners', bannerCtrl.getAll)
+	app.post('/api/banners', uploadBanner.single('image'), bannerCtrl.add)
+	app.put(
+		'/api/banners/:bannerId',
+		uploadBanner.single('image'),
+		bannerCtrl.update
+	)
+	app.delete('/api/banners/:bannerId', bannerCtrl.delete)
 }
