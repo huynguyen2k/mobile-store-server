@@ -93,4 +93,11 @@ module.exports = function (app) {
 		bannerCtrl.update
 	)
 	app.delete('/api/banners/:bannerId', bannerCtrl.delete)
+
+	// Supplier API
+	const supplierCtrl = require('./controllers/SupplierController')
+	app.get('/api/supplier', supplierCtrl.getAll)
+	app.post('/api/supplier', supplierCtrl.add)
+	app.put('/api/supplier/:supplierId', supplierCtrl.update)
+	app.delete('/api/supplier/:supplierId', supplierCtrl.delete)
 }
