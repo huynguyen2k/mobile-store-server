@@ -100,4 +100,9 @@ module.exports = function (app) {
 	app.post('/api/supplier', supplierCtrl.add)
 	app.put('/api/supplier/:supplierId', supplierCtrl.update)
 	app.delete('/api/supplier/:supplierId', supplierCtrl.delete)
+
+	// ShopInfo API
+	const shopInfoCtrl = require('./controllers/ShopInfoController')
+	app.get('/api/shop-info', shopInfoCtrl.get)
+	app.put('/api/shop-info/:shopId', shopInfoCtrl.update)
 }

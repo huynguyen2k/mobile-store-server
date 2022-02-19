@@ -1,4 +1,7 @@
+require('dotenv').config()
+
 const db = require('../db')
+const axios = require('axios').default
 
 module.exports = {
 	getAll(req, res) {
@@ -7,10 +10,54 @@ module.exports = {
 		db.query(query, async (error, response) => {
 			if (error) throw error
 
+			const content = await Promise.all(
+				response.map(async record => {
+					const province = await axios.get(
+						'https://online-gateway.ghn.vn/shiip/public-api/master-data/province',
+						{
+							headers: {
+								token: process.env.GHN_TOKEN,
+							},
+						}
+					)
+					const district = await axios.post(
+						'https://online-gateway.ghn.vn/shiip/public-api/master-data/district',
+						{ province_id: record.province_id },
+						{
+							headers: {
+								token: process.env.GHN_TOKEN,
+							},
+						}
+					)
+					const ward = await axios.post(
+						'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward',
+						{ district_id: record.district_id },
+						{
+							headers: {
+								token: process.env.GHN_TOKEN,
+							},
+						}
+					)
+
+					return {
+						...record,
+						province_name: province.data.data.find(
+							item => item.ProvinceID === record.province_id
+						).ProvinceName,
+						district_name: district.data.data.find(
+							item => item.DistrictID === record.district_id
+						).DistrictName,
+						ward_name: ward.data.data.find(
+							item => item.WardCode === record.ward_code
+						).WardName,
+					}
+				})
+			)
+
 			res.json({
 				statusCode: 200,
 				message: 'Xử lý thành công!',
-				content: response,
+				content: content,
 			})
 		})
 	},
