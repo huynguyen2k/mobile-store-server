@@ -21,8 +21,18 @@ const bannerStorage = multer.diskStorage({
 	},
 })
 
+const productStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, './public/images/products')
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + file.originalname)
+	},
+})
+
 const uploadAvatar = multer({ storage: avatarStorage })
 const uploadBanner = multer({ storage: bannerStorage })
+const uploadProduct = multer({ storage: productStorage })
 
 const authToken = (req, res, next) => {
 	const authHeader = req.headers['authorization']
@@ -105,4 +115,27 @@ module.exports = function (app) {
 	const shopInfoCtrl = require('./controllers/ShopInfoController')
 	app.get('/api/shop-info', shopInfoCtrl.get)
 	app.put('/api/shop-info/:shopId', shopInfoCtrl.update)
+
+	// Product API
+	const productCtrl = require('./controllers/ProductController')
+	app.get('/api/product/:productId', productCtrl.get)
+	app.get('/api/product', productCtrl.getAll)
+
+	app.post('/api/product/product-option', productCtrl.addProductOption)
+	app.put(
+		'/api/product/product-option/:optionId',
+		productCtrl.updateProductOption
+	)
+	app.delete(
+		'/api/product/product-option/:optionId',
+		productCtrl.deleteProductOption
+	)
+
+	app.post('/api/product', uploadProduct.array('images'), productCtrl.add)
+	app.post(
+		'/api/product/upload-image',
+		uploadProduct.single('image'),
+		productCtrl.upload
+	)
+	app.post('/api/product/delete-image', productCtrl.deleteUploadFile)
 }
