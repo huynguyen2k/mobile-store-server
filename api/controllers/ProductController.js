@@ -52,6 +52,119 @@ module.exports = {
 		})
 	},
 
+	async update(req, res) {
+		const { productId } = req.params
+		const { images, ...data } = req.body
+
+		const query = 'UPDATE product SET ? WHERE id = ?'
+		db.query(query, [data, productId], async (error, response) => {
+			if (error) throw error
+
+			const query = 'DELETE FROM product_image WHERE product_id = ?'
+			db.query(query, [productId], async (error, response) => {
+				if (error) throw error
+
+				const imageQueries = images.map(image => {
+					return new Promise((resolve, reject) => {
+						const data = {
+							image: image,
+							product_id: productId,
+						}
+						const query = 'INSERT INTO product_image SET ?'
+						db.query(query, [data], (error, result) => {
+							if (error) throw error
+							resolve()
+						})
+					})
+				})
+				await Promise.all(imageQueries)
+
+				res.json({
+					message: 'Cập nhật thông tin sản phẩm thành công!',
+					statusCode: '200',
+				})
+			})
+		})
+	},
+
+	updateProductStatus(req, res) {
+		const { productId } = req.params
+		const data = req.body
+		const query = 'UPDATE product SET ? WHERE id = ?'
+
+		db.query(query, [data, productId], (error, response) => {
+			if (error) throw error
+
+			if (response.affectedRows > 0) {
+				res.json({
+					statusCode: 200,
+					message: 'Cập nhật trạng thái sản phẩm thành công!',
+				})
+				return
+			}
+
+			res.status(404).json({
+				statusCode: 404,
+				message: 'Không tìm thấy sản phẩm mà bạn muốn cập nhật!',
+			})
+		})
+	},
+
+	delete(req, res) {
+		const { productId } = req.params
+		const query = 'SELECT * FROM product_option WHERE product_id = ?'
+
+		db.query(query, [productId], (error, response) => {
+			if (error) throw error
+
+			if (response.length > 0) {
+				return res.status(400).json({
+					statusCode: 400,
+					message: 'Không thể xóa sản phẩm này!',
+				})
+			}
+
+			const query = 'SELECT * FROM product_rating WHERE product_id = ?'
+			db.query(query, [productId], (error, response) => {
+				if (error) throw error
+
+				if (response.length > 0) {
+					return res.status(400).json({
+						statusCode: 400,
+						message: 'Không thể xóa sản phẩm này!',
+					})
+				}
+
+				const query = 'DELETE FROM product_image WHERE product_id = ?'
+				db.query(query, [productId], (error, response) => {
+					if (error) throw error
+
+					const query = 'DELETE FROM product WHERE id = ?'
+					db.query(query, [productId], (error, response) => {
+						if (error) {
+							return res.status(400).json({
+								statusCode: 400,
+								message: 'Không thể xóa sản phẩm này!',
+							})
+						}
+
+						if (response.affectedRows > 0) {
+							return res.json({
+								statusCode: 200,
+								message: 'Xóa sản phẩm thành công!',
+							})
+						}
+
+						res.status(404).json({
+							statusCode: 404,
+							message: 'Không tìm thấy sản phẩm mà bạn muốn xóa!',
+						})
+					})
+				})
+			})
+		})
+	},
+
 	addProductOption(req, res) {
 		const data = {
 			...req.body,

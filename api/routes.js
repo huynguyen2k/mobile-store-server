@@ -132,6 +132,10 @@ module.exports = function (app) {
 	)
 
 	app.post('/api/product', uploadProduct.array('images'), productCtrl.add)
+	app.put('/api/product/:productId', productCtrl.update)
+	app.put('/api/product/status/:productId', productCtrl.updateProductStatus)
+	app.delete('/api/product/:productId', productCtrl.delete)
+
 	app.post(
 		'/api/product/upload-image',
 		uploadProduct.single('image'),
