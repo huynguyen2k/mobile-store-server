@@ -142,4 +142,10 @@ module.exports = function (app) {
 		productCtrl.upload
 	)
 	app.post('/api/product/delete-image', productCtrl.deleteUploadFile)
+
+	// Receipt API
+	const receiptCtrl = require('./controllers/ReceiptController')
+	app.get('/api/receipt/:receiptId', receiptCtrl.get)
+	app.get('/api/receipt', receiptCtrl.getAll)
+	app.post('/api/receipt', receiptCtrl.add)
 }

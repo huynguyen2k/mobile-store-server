@@ -359,7 +359,14 @@ module.exports = {
 						if (error) throw error
 						product.images = response
 
-						const query = 'SELECT * FROM product_option WHERE product_id = ?'
+						const query = `
+							SELECT p.*, ram.name as ram_name, rom.name as rom_name, color.name as color_name
+							FROM product_option p, ram_option ram, rom_option rom, color_option color 
+							WHERE p.product_id = ?
+							AND p.ram_id = ram.id
+							AND p.rom_id = rom.id 
+							AND p.color_id = color.id
+						`
 						db.query(query, [product.id], (error, response) => {
 							if (error) throw error
 							product.product_options = response
