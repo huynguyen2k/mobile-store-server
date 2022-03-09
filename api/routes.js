@@ -148,4 +148,18 @@ module.exports = function (app) {
 	app.get('/api/receipt/:receiptId', receiptCtrl.get)
 	app.get('/api/receipt', receiptCtrl.getAll)
 	app.post('/api/receipt', receiptCtrl.add)
+
+	// Coupons API
+	const couponsCtrl = require('./controllers/CouponsController')
+	app.get('/api/coupons', couponsCtrl.getAll)
+	app.post('/api/coupons', couponsCtrl.add)
+	app.put('/api/coupons/:couponsId', couponsCtrl.update)
+	app.delete('/api/coupons/:couponsId', couponsCtrl.delete)
+
+	// Notification API
+	const notificationCtrl = require('./controllers/NotificationController')
+	app.get('/api/notification', notificationCtrl.getAll)
+	app.post('/api/notification', notificationCtrl.add)
+	app.put('/api/notification/:notificationId', notificationCtrl.update)
+	app.delete('/api/notification/:notificationId', notificationCtrl.delete)
 }
