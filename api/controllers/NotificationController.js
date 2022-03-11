@@ -23,6 +23,52 @@ module.exports = {
 		})
 	},
 
+	getCustomerNotification(req, res) {
+		const { customerId } = req.params
+		const query = `
+			SELECT * FROM notification
+			WHERE published = 1
+      ORDER BY created_date DESC
+		`
+
+		db.query(query, (error, result) => {
+			if (error) throw error
+
+			const query = `
+				SELECT * FROM viewed_notification
+				WHERE user_id = ?
+			`
+			db.query(query, [customerId], (error, response) => {
+				if (error) throw error
+
+				const newResult = result.map(x => ({
+					...x,
+					readStatus: response.findIndex(y => y.notification_id === x.id) >= 0,
+				}))
+
+				res.json({
+					statusCode: 200,
+					message: 'Xử lý thành công!',
+					content: newResult,
+				})
+			})
+		})
+	},
+
+	markRead(req, res) {
+		const data = req.body
+		const query = 'INSERT INTO viewed_notification SET ?'
+
+		db.query(query, [data], (error, response) => {
+			if (error) throw error
+
+			res.json({
+				statusCode: 200,
+				message: 'Đánh dấu thông báo thành công!',
+			})
+		})
+	},
+
 	add(req, res) {
 		const data = req.body
 		const query = 'INSERT INTO notification SET ?'

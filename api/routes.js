@@ -159,7 +159,12 @@ module.exports = function (app) {
 	// Notification API
 	const notificationCtrl = require('./controllers/NotificationController')
 	app.get('/api/notification', notificationCtrl.getAll)
+	app.get(
+		'/api/notification/:customerId',
+		notificationCtrl.getCustomerNotification
+	)
 	app.post('/api/notification', notificationCtrl.add)
+	app.put('/api/notification/mark-read', notificationCtrl.markRead)
 	app.put('/api/notification/:notificationId', notificationCtrl.update)
 	app.delete('/api/notification/:notificationId', notificationCtrl.delete)
 }
