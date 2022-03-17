@@ -167,4 +167,11 @@ module.exports = function (app) {
 	app.put('/api/notification/mark-read', notificationCtrl.markRead)
 	app.put('/api/notification/:notificationId', notificationCtrl.update)
 	app.delete('/api/notification/:notificationId', notificationCtrl.delete)
+
+	// Address API
+	const addressCtrl = require('./controllers/AddressController')
+	app.get('/api/address/', addressCtrl.getAll)
+	app.post('/api/address', addressCtrl.add)
+	app.put('/api/address/:addressId', addressCtrl.update)
+	app.delete('/api/address/:addressId', addressCtrl.delete)
 }

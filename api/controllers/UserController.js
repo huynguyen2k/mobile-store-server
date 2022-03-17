@@ -244,9 +244,19 @@ module.exports = {
 					db.query(query, [data, data.id], (error, response) => {
 						if (error) throw error
 
-						res.json({
-							statusCode: 200,
-							message: 'Cập nhật thông tin người dùng thành công!',
+						const query = `
+							SELECT u.*, ur.name as role_name
+							FROM user u, user_role ur
+							WHERE u.id = ? AND u.role_id = ur.id
+						`
+						db.query(query, [data.id], (error, response) => {
+							if (error) throw error
+
+							res.json({
+								statusCode: 200,
+								message: 'Cập nhật thông tin người dùng thành công!',
+								content: response[0],
+							})
 						})
 					})
 				} else {
