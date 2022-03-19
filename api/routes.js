@@ -170,8 +170,15 @@ module.exports = function (app) {
 
 	// Address API
 	const addressCtrl = require('./controllers/AddressController')
-	app.get('/api/address/', addressCtrl.getAll)
+	app.get('/api/address', addressCtrl.getAll)
 	app.post('/api/address', addressCtrl.add)
 	app.put('/api/address/:addressId', addressCtrl.update)
 	app.delete('/api/address/:addressId', addressCtrl.delete)
+
+	// Cart API
+	const cartCtrl = require('./controllers/CartController')
+	app.get('/api/cart', cartCtrl.getAll)
+	app.post('/api/cart', cartCtrl.add)
+	app.put('/api/cart/:cartId', cartCtrl.update)
+	app.delete('/api/cart/:cartId', cartCtrl.delete)
 }

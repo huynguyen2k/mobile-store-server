@@ -318,13 +318,19 @@ module.exports = {
 			if (response.length === 1) {
 				let avatarUrl = response[0].avatar
 				avatarUrl = avatarUrl.slice(avatarUrl.lastIndexOf('/') + 1)
-				if (avatarUrl !== 'default_avatar.png') {
-					fs.unlinkSync(`./public/images/avatars/${avatarUrl}`)
-				}
 
 				const query = 'DELETE FROM user WHERE id = ?'
 				db.query(query, [userId], (error, response) => {
-					if (error) throw error
+					if (error) {
+						return res.status(400).json({
+							statusCode: 400,
+							message: 'Không thể xóa người dùng này!',
+						})
+					}
+
+					if (avatarUrl !== 'default_avatar.png') {
+						fs.unlinkSync(`./public/images/avatars/${avatarUrl}`)
+					}
 
 					res.json({
 						statusCode: 200,
