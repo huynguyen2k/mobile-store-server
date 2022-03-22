@@ -6,7 +6,8 @@ module.exports = {
 		const query = `
       SELECT c.*, o.product_id, o.ram_id, o.rom_id, o.color_id, o.original_price,
       o.sale_price, o.quantity as total_quantity, o.sold_quantity, ram.name as ram_name, 
-			rom.name as rom_name, color.name as color_name, p.name as product_name
+			rom.name as rom_name, color.name as color_name, p.name as product_name,
+			p.width, p.height, p.weight, p.length
       FROM cart c, product_option o, ram_option ram, 
       rom_option rom, color_option color, product p
       WHERE c.user_id = ? AND c.product_option_id = o.id AND

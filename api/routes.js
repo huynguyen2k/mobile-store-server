@@ -152,6 +152,7 @@ module.exports = function (app) {
 	// Coupons API
 	const couponsCtrl = require('./controllers/CouponsController')
 	app.get('/api/coupons', couponsCtrl.getAll)
+	app.post('/api/coupons/apply', couponsCtrl.applyCoupon)
 	app.post('/api/coupons', couponsCtrl.add)
 	app.put('/api/coupons/:couponsId', couponsCtrl.update)
 	app.delete('/api/coupons/:couponsId', couponsCtrl.delete)

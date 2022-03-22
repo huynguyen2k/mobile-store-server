@@ -19,6 +19,36 @@ module.exports = {
 		})
 	},
 
+	applyCoupon(req, res) {
+		const data = req.body
+		const query = `
+			SELECT * FROM coupons
+			WHERE code = ? AND ? >= start_date AND ? <= end_date
+			AND used_quantity < quantity
+		`
+
+		db.query(
+			query,
+			[data.code, data.current_date, data.current_date],
+			(error, response) => {
+				if (error) throw error
+
+				if (response.length === 0) {
+					return res.status(400).json({
+						statusCode: 400,
+						message: 'Mã giảm giá bạn nhập không hợp lệ!',
+					})
+				}
+
+				res.json({
+					statusCode: 200,
+					message: 'Xử lý thành công!',
+					content: response[0],
+				})
+			}
+		)
+	},
+
 	add(req, res) {
 		const data = req.body
 		const query = 'SELECT * FROM coupons WHERE code = ?'
