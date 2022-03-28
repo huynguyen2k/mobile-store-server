@@ -182,4 +182,12 @@ module.exports = function (app) {
 	app.post('/api/cart', cartCtrl.add)
 	app.put('/api/cart/:cartId', cartCtrl.update)
 	app.delete('/api/cart/:cartId', cartCtrl.delete)
+
+	// Order API
+	const orderCtrl = require('./controllers/OrderController')
+	app.get('/api/order', orderCtrl.getAll)
+	app.get('/api/order/order-status', orderCtrl.getAllOrderStatus)
+	app.get('/api/order/:orderId', orderCtrl.get)
+	app.post('/api/order', orderCtrl.add)
+	app.put('/api/order/:orderId', orderCtrl.update)
 }
