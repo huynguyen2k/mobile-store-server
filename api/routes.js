@@ -30,9 +30,19 @@ const productStorage = multer.diskStorage({
 	},
 })
 
+const ratingStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, './public/images/ratings')
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + file.originalname)
+	},
+})
+
 const uploadAvatar = multer({ storage: avatarStorage })
 const uploadBanner = multer({ storage: bannerStorage })
 const uploadProduct = multer({ storage: productStorage })
+const uploadRating = multer({ storage: ratingStorage })
 
 const authToken = (req, res, next) => {
 	const authHeader = req.headers['authorization']
@@ -190,4 +200,15 @@ module.exports = function (app) {
 	app.get('/api/order/:orderId', orderCtrl.get)
 	app.post('/api/order', orderCtrl.add)
 	app.put('/api/order/:orderId', orderCtrl.update)
+
+	// Rating API
+	const ratingCtrl = require('./controllers/RatingController')
+	app.get('/api/rating', ratingCtrl.getAll)
+	app.post('/api/rating', ratingCtrl.add)
+	app.post(
+		'/api/rating/upload-image',
+		uploadRating.single('image'),
+		ratingCtrl.uploadImage
+	)
+	app.post('/api/rating/delete-image', ratingCtrl.deleteImage)
 }
