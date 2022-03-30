@@ -333,10 +333,26 @@ module.exports = {
 					if (error) throw error
 					product.product_options = response
 
-					res.json({
-						statusCode: 200,
-						message: 'Xử lý thành công!',
-						content: product,
+					const query = 'SELECT * FROM product_rating WHERE product_id = ?'
+					db.query(query, [product.id], (error, response) => {
+						if (error) throw error
+
+						let rating = 0
+						if (response.length > 0) {
+							rating =
+								response.reduce((result, x) => result + x.rating, 0) /
+								response.length
+						}
+
+						res.json({
+							statusCode: 200,
+							message: 'Xử lý thành công!',
+							content: {
+								...product,
+								rating: rating,
+								rating_quantity: response.length,
+							},
+						})
 					})
 				})
 			})
@@ -371,7 +387,21 @@ module.exports = {
 							if (error) throw error
 							product.product_options = response
 
-							resolve()
+							const query = 'SELECT * FROM product_rating WHERE product_id = ?'
+							db.query(query, [product.id], (error, response) => {
+								if (error) throw error
+
+								let rating = 0
+								if (response.length > 0) {
+									rating =
+										response.reduce((result, x) => result + x.rating, 0) /
+										response.length
+								}
+
+								product.rating = rating
+								product.rating_quantity = response.length
+								resolve()
+							})
 						})
 					})
 				})

@@ -5,13 +5,22 @@ const fs = require('fs')
 
 module.exports = {
 	getAll(req, res) {
-		const { userId } = req.query
-		const query = 'SELECT * FROM product_rating ORDER BY created_date DESC'
+		const { userId, productId } = req.query
+		const query = `
+			SELECT pr.*, u.full_name, u.avatar
+			FROM product_rating pr, user u
+			WHERE pr.user_id = u.id
+			ORDER BY pr.created_date DESC
+		`
 		db.query(query, async (error, response) => {
 			if (error) throw error
 
 			if (userId) {
 				response = response.filter(e => e.user_id == userId)
+			}
+
+			if (productId) {
+				response = response.filter(e => e.product_id == productId)
 			}
 
 			const promiseList = response.map(x => {
