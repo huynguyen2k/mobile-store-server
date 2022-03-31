@@ -211,4 +211,5 @@ module.exports = function (app) {
 		ratingCtrl.uploadImage
 	)
 	app.post('/api/rating/delete-image', ratingCtrl.deleteImage)
+	app.delete('/api/rating/:ratingId', ratingCtrl.delete)
 }

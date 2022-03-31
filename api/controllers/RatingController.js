@@ -7,9 +7,9 @@ module.exports = {
 	getAll(req, res) {
 		const { userId, productId } = req.query
 		const query = `
-			SELECT pr.*, u.full_name, u.avatar
-			FROM product_rating pr, user u
-			WHERE pr.user_id = u.id
+			SELECT pr.*, u.full_name, u.avatar, p.name as product_name
+			FROM product_rating pr, user u, product p
+			WHERE pr.user_id = u.id AND pr.product_id = p.id
 			ORDER BY pr.created_date DESC
 		`
 		db.query(query, async (error, response) => {
@@ -30,7 +30,15 @@ module.exports = {
 						if (error) throw error
 
 						x.images = response
-						resolve()
+						const query = 'SELECT * FROM product_image WHERE product_id = ?'
+						db.query(query, [x.product_id], (error, response) => {
+							if (error) throw error
+
+							if (response.length > 0) {
+								x.product_image = response[0].image
+							}
+							resolve()
+						})
 					})
 				})
 			})
@@ -112,29 +120,45 @@ module.exports = {
 	},
 
 	delete(req, res) {
-		const { romId } = req.params
-		const query = 'DELETE FROM rom_option WHERE id = ?'
+		const { ratingId } = req.params
+		const query = 'SELECT * FROM rating_image WHERE rating_id = ?'
 
-		db.query(query, [romId], (error, response) => {
-			if (error) {
-				res.status(400).json({
-					statusCode: 400,
-					message: 'Không thể xóa cấu hình rom này!',
+		db.query(query, [ratingId], async (error, response) => {
+			if (error) throw error
+
+			const promiseList = response.map(x => {
+				return new Promise((resolve, reject) => {
+					const image = x.image
+					const imageName = image.slice(image.lastIndexOf('/') + 1)
+					fs.unlinkSync(`./public/images/ratings/${imageName}`)
+
+					const query = 'DELETE FROM rating_image WHERE image = ?'
+					db.query(query, [image], async (error, response) => {
+						if (error) throw error
+
+						resolve()
+					})
 				})
-				return
-			}
+			})
 
-			if (response.affectedRows > 0) {
-				res.json({
-					statusCode: 200,
-					message: 'Xóa cấu hình rom thành công!',
+			await Promise.all(promiseList)
+
+			const query = 'DELETE FROM product_rating WHERE id = ?'
+			db.query(query, [ratingId], (error, response) => {
+				if (error) throw error
+
+				if (response.affectedRows > 0) {
+					res.json({
+						statusCode: 200,
+						message: 'Xóa đánh giá thành công!',
+					})
+					return
+				}
+
+				res.status(404).json({
+					statusCode: 404,
+					message: 'Không tìm thấy đánh giá mà bạn muốn xóa!',
 				})
-				return
-			}
-
-			res.status(404).json({
-				statusCode: 404,
-				message: 'Không tìm thấy cấu hình rom mà bạn muốn xóa!',
 			})
 		})
 	},
