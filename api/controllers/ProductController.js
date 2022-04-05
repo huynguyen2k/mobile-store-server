@@ -360,11 +360,35 @@ module.exports = {
 	},
 
 	getAll(req, res) {
-		const query = `
+		const params = req.query
+
+		if (params.hasOwnProperty('brand')) {
+			params.brand = params.brand.split('-').map(x => parseInt(x))
+		}
+		if (params.hasOwnProperty('rating')) {
+			params.rating = parseInt(params.rating)
+		}
+		if (params.hasOwnProperty('min_price')) {
+			params.min_price = parseInt(params.min_price)
+		}
+		if (params.hasOwnProperty('max_price')) {
+			params.max_price = parseInt(params.max_price)
+		}
+
+		let query = `
 			SELECT p.*, b.name as brand_name
 			FROM product p, brand b
 			WHERE p.brand_id = b.id
 		`
+		if (params.sort === 'newest') {
+			query = `
+				SELECT p.*, b.name as brand_name
+				FROM product p, brand b
+				WHERE p.brand_id = b.id
+				ORDER BY p.created_date DESC
+			`
+		}
+
 		db.query(query, async (error, productList) => {
 			if (error) throw error
 
@@ -385,7 +409,14 @@ module.exports = {
 						`
 						db.query(query, [product.id], (error, response) => {
 							if (error) throw error
+
 							product.product_options = response
+							product.sold_quantity = response.reduce(
+								(result, x) => result + x.sold_quantity,
+								0
+							)
+							product.sale_price = response[0].sale_price
+							product.original_price = response[0].original_price
 
 							const query = 'SELECT * FROM product_rating WHERE product_id = ?'
 							db.query(query, [product.id], (error, response) => {
@@ -408,6 +439,60 @@ module.exports = {
 			})
 
 			await Promise.all(promiseList)
+
+			if (params.sort === 'default') {
+				productList.sort((a, b) => {
+					if (a.rating > b.rating) return -1
+					if (a.rating < b.rating) return 1
+
+					if (a.sold_quantity > b.sold_quantity) return -1
+					if (a.sold_quantity === b.sold_quantity) return 0
+					return 1
+				})
+			}
+
+			if (params.sort === 'top-seller') {
+				productList.sort((a, b) => {
+					if (a.sold_quantity > b.sold_quantity) return -1
+					if (a.sold_quantity === b.sold_quantity) return 0
+					return 1
+				})
+			}
+
+			if (params.sort === 'price-asc') {
+				productList.sort((a, b) => {
+					if (a.sale_price < b.sale_price) return -1
+					if (a.sale_price === b.sale_price) return 0
+					return 1
+				})
+			}
+
+			if (params.sort === 'price-desc') {
+				productList.sort((a, b) => {
+					if (a.sale_price > b.sale_price) return -1
+					if (a.sale_price === b.sale_price) return 0
+					return 1
+				})
+			}
+
+			if (params.hasOwnProperty('brand')) {
+				productList = productList.filter(x => params.brand.includes(x.brand_id))
+			}
+			if (params.hasOwnProperty('rating')) {
+				productList = productList.filter(x => x.rating >= params.rating)
+			}
+			if (params.hasOwnProperty('min_price')) {
+				productList = productList.filter(x => x.sale_price >= params.min_price)
+			}
+			if (params.hasOwnProperty('max_price')) {
+				productList = productList.filter(x => x.sale_price <= params.max_price)
+			}
+			if (params.hasOwnProperty('product_name')) {
+				productList = productList.filter(x =>
+					x.name.toLowerCase().includes(params.product_name.toLowerCase())
+				)
+			}
+
 			res.json({
 				statusCode: 200,
 				message: 'Xử lý thành công!',
