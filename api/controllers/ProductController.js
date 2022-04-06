@@ -361,6 +361,11 @@ module.exports = {
 
 	getAll(req, res) {
 		const params = req.query
+		let hasPublished = false
+
+		if (params.hasOwnProperty('published')) {
+			hasPublished = true
+		}
 
 		if (params.hasOwnProperty('brand')) {
 			params.brand = params.brand.split('-').map(x => parseInt(x))
@@ -379,12 +384,14 @@ module.exports = {
 			SELECT p.*, b.name as brand_name
 			FROM product p, brand b
 			WHERE p.brand_id = b.id
+			${hasPublished ? ` AND p.published = ${params.published}` : ''}
 		`
 		if (params.sort === 'newest') {
 			query = `
 				SELECT p.*, b.name as brand_name
 				FROM product p, brand b
 				WHERE p.brand_id = b.id
+				${hasPublished ? ` AND p.published = ${params.published}` : ''}
 				ORDER BY p.created_date DESC
 			`
 		}
