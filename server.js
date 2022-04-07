@@ -12,9 +12,18 @@ console.log(port)
 
 // 	next()
 // })
+
 const cors = require('cors')
+var whitelist = ['http://localhost:3000', 'http://localhost:19006']
+
 const corsOptions = {
-	origin: 'http://localhost:3000',
+	origin: function (origin, callback) {
+		if (whitelist.indexOf(origin) !== -1) {
+			callback(null, true)
+		} else {
+			callback(new Error('Not allowed by CORS'))
+		}
+	},
 	credentials: true, //access-control-allow-credentials:true
 	optionSuccessStatus: 200,
 }
