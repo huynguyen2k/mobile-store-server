@@ -14,20 +14,7 @@ console.log(port)
 // })
 
 const cors = require('cors')
-var whitelist = ['http://localhost:3000', 'http://localhost:19006']
-
-const corsOptions = {
-	origin: function (origin, callback) {
-		if (whitelist.indexOf(origin) !== -1) {
-			callback(null, true)
-		} else {
-			callback(new Error('Not allowed by CORS'))
-		}
-	},
-	credentials: true, //access-control-allow-credentials:true
-	optionSuccessStatus: 200,
-}
-app.use(cors(corsOptions))
+app.use(cors())
 
 app.use(express.static('public'))
 app.use(express.json())

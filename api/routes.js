@@ -212,4 +212,9 @@ module.exports = function (app) {
 	)
 	app.post('/api/rating/delete-image', ratingCtrl.deleteImage)
 	app.delete('/api/rating/:ratingId', ratingCtrl.delete)
+
+	// Statistic API
+	const statisticCtrl = require('./controllers/StatisticController')
+	app.get('/api/statistic', statisticCtrl.getAll)
+	app.get('/api/statistic/get-total-price', statisticCtrl.getTotalPrice)
 }
