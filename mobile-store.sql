@@ -28,6 +28,7 @@ CREATE TABLE `USER_ADDRESS` (
   district_id int,
   ward_code varchar(30),
   address varchar(100),
+  full_address varchar(255),
   is_default boolean,
   FOREIGN KEY (user_id) REFERENCES USER(id)
 );
@@ -139,10 +140,17 @@ CREATE TABLE `ORDER` (
 	id int PRIMARY KEY AUTO_INCREMENT,
   total_price int,
   delivery_cost int,
-  created_date datetime,
-  customer_id int,
-  status_id int,
   coupons_id int,
+  discount_value int,
+  status_id int,
+  shop_name varchar(100),
+  shop_phone varchar(15),
+  shop_address varchar(1000),
+  customer_id int,
+  customer_name varchar(100),
+  customer_phone varchar(15),
+  customer_address varchar(1000),
+  created_date datetime,
   FOREIGN KEY (customer_id) REFERENCES USER(id),
   FOREIGN KEY (status_id) REFERENCES ORDER_STATUS(id),
   FOREIGN KEY (coupons_id) REFERENCES COUPONS(id)
@@ -261,17 +269,19 @@ INSERT INTO USER_ROLE(name) VALUES('Khách hàng');
 /* ====================== INSERT VALUES INTO BRAND TABLE ====================== */
 INSERT INTO BRAND(name, published, created_date) VALUES('Samsung', 1, '2022-01-17 12:00:00');
 INSERT INTO BRAND(name, published, created_date) VALUES('Vivo', 1, '2022-01-17 12:00:00');
-INSERT INTO BRAND(name, published, created_date) VALUES('Iphone', 1, '2022-01-17 12:00:00');
+INSERT INTO BRAND(name, published, created_date) VALUES('iPhone', 1, '2022-01-17 12:00:00');
 INSERT INTO BRAND(name, published, created_date) VALUES('Xiaomi', 1, '2022-01-17 12:00:00');
 INSERT INTO BRAND(name, published, created_date) VALUES('OPPO', 1, '2022-01-17 12:00:00');
 INSERT INTO BRAND(name, published, created_date) VALUES('Nokia', 1, '2022-01-17 12:00:00');
 INSERT INTO BRAND(name, published, created_date) VALUES('Realme', 1, '2022-01-17 12:00:00');
 
 /* ====================== INSERT VALUES INTO BRAND TABLE ====================== */
+INSERT INTO ORDER_STATUS(name) VALUES('Đặt hàng');
 INSERT INTO ORDER_STATUS(name) VALUES('Chờ xác nhận');
 INSERT INTO ORDER_STATUS(name) VALUES('Đang xử lý');
 INSERT INTO ORDER_STATUS(name) VALUES('Đang vận chuyển');
 INSERT INTO ORDER_STATUS(name) VALUES('Đã giao hàng');
+INSERT INTO ORDER_STATUS(name) VALUES('Hoàn tất');
 INSERT INTO ORDER_STATUS(name) VALUES('Đã hủy');
 
 /* ====================== INSERT VALUES INTO RAM_OPTION TABLE ====================== */
@@ -291,6 +301,7 @@ INSERT INTO ROM_OPTION(name, created_date) VALUES('64 GB', '2022-01-23 06:00:00'
 INSERT INTO ROM_OPTION(name, created_date) VALUES('128 GB', '2022-01-23 06:00:00');
 INSERT INTO ROM_OPTION(name, created_date) VALUES('256 GB', '2022-01-23 06:00:00');
 INSERT INTO ROM_OPTION(name, created_date) VALUES('512 GB', '2022-01-23 06:00:00');
+INSERT INTO ROM_OPTION(name, created_date) VALUES('1 TB', '2022-01-23 06:00:00');
 
 /* ====================== INSERT VALUES INTO COLOR_OPTION TABLE ====================== */
 INSERT INTO COLOR_OPTION(name, created_date) VALUES('Xanh', '2022-01-23 06:00:00');
@@ -307,3 +318,5 @@ INSERT INTO COLOR_OPTION(name, created_date) VALUES('Nâu', '2022-01-23 06:00:00
 INSERT INTO COLOR_OPTION(name, created_date) VALUES('Tím', '2022-01-23 06:00:00');
 INSERT INTO COLOR_OPTION(name, created_date) VALUES('Cam', '2022-01-23 06:00:00');
 
+/* ====================== INSERT VALUES INTO SHOP_INFO TABLE ====================== */
+INSERT INTO COLOR_OPTION(logo, name, email) VALUES('Mobile Store', 'Mobile Store', 'mobilestore@gmail.com');
