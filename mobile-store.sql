@@ -193,7 +193,7 @@ CREATE TABLE `RECEIPT` (
 	id int PRIMARY KEY AUTO_INCREMENT,
   supplier_id int,
   user_id int,
-  total_price int,
+  total_price bigint,
   created_date datetime,
   FOREIGN KEY (supplier_id) REFERENCES SUPPLIER(id),
   FOREIGN KEY (user_id) REFERENCES USER(id)
